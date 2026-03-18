@@ -1,0 +1,56 @@
+# Python virtual environment
+venv/
+
+# Environment variables
+.env
+
+# Byte-compiled / cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# IDE / editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Database / local files
+*.sqlite3
+
+# Python package distribution
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Jupyter Notebook checkpoints (if used)
+.ipynb_checkpoints/
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Coverage reports
+.coverage
+htmlcov/
+.coverage.*
+
+# Test / temp files
+.pytest_cache/
+
+*.mp4
+
+# AI models
+*.pt
+*.onnx
+*.weights
+*.engine
