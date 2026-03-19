@@ -12,6 +12,11 @@ BACKEND_URL  = "http://127.0.0.1:8000/update-spots"
 SEND_EVERY   = 1.0   # seconds between each POST to the backend
 CONFIDENCE   = 0.35  # YOLO confidence threshold (0 to 1)
 
+# ── Performance tuning ───────────────────────────────────────────────────────
+INFER_EVERY  = 3     # run YOLO only on every Nth frame (2–5 is a good range)
+INFER_WIDTH  = 640   # resize frame to this width before inference (None = original)
+# ─────────────────────────────────────────────────────────────────────────────
+
 # YOLO is trained on the COCO dataset.
 # These are the class IDs that correspond to vehicles in that dataset:
 #   2 = car   3 = motorcycle   5 = bus   7 = truck
@@ -136,6 +141,8 @@ if not cap.isOpened():
     exit(1)
 
 last_send_time = 0
+frame_count    = 0
+statuses       = ["free"] * len(spots)   # cached — reused on skipped frames
 
 print("\nDetection running. Press Q in the window to stop.\n")
 
@@ -147,20 +154,34 @@ while True:
         cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
         continue
 
-    # ── Run YOLO on the current frame ─────────────────────────────────────
-    results = model(frame, verbose=False)[0]   # verbose=False silences per-frame logs
+    frame_count += 1
 
-    # Extract bounding boxes for vehicles only
-    vehicle_boxes = []
-    for box in results.boxes:
-        cls_id     = int(box.cls[0])
-        confidence = float(box.conf[0])
-        if cls_id in VEHICLE_CLASSES and confidence >= CONFIDENCE:
-            x1, y1, x2, y2 = map(int, box.xyxy[0])
-            vehicle_boxes.append((x1, y1, x2, y2))
+    # ── Run YOLO only every INFER_EVERY frames ────────────────────────────
+    if frame_count % INFER_EVERY == 0:
+        # Optionally downscale for faster inference, scale boxes back afterward
+        if INFER_WIDTH:
+            h, w  = frame.shape[:2]
+            scale = INFER_WIDTH / w
+            infer_frame = cv2.resize(frame, (INFER_WIDTH, int(h * scale)))
+        else:
+            infer_frame = frame
+            scale       = 1.0
 
-    # ── Determine each spot's status ──────────────────────────────────────
-    statuses = compute_statuses(spots, vehicle_boxes)
+        results = model(infer_frame, verbose=False)[0]
+
+        vehicle_boxes = []
+        for box in results.boxes:
+            cls_id     = int(box.cls[0])
+            confidence = float(box.conf[0])
+            if cls_id in VEHICLE_CLASSES and confidence >= CONFIDENCE:
+                x1, y1, x2, y2 = map(int, box.xyxy[0])
+                if scale != 1.0:
+                    x1, y1, x2, y2 = (int(x1 / scale), int(y1 / scale),
+                                       int(x2 / scale), int(y2 / scale))
+                vehicle_boxes.append((x1, y1, x2, y2))
+
+        statuses = compute_statuses(spots, vehicle_boxes)
+    # On skipped frames, `statuses` keeps its previous value — nearly free.
 
     # ── Draw the result on the frame ──────────────────────────────────────
     draw_frame(frame, spots, statuses)
