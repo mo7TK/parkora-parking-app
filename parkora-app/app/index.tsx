@@ -98,7 +98,7 @@ export default function MiniMap() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>Parking Mini Map</Text>
+        <Text style={styles.title}>Parking Mini </Text>
         <View style={styles.statusRow}>
           <View style={[styles.statusDot, { backgroundColor: statusColor }]} />
           <Text style={styles.statusText}>{connectionStatus}</Text>
