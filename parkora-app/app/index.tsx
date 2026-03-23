@@ -2,8 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 
 // ── Configuration ─────────────────────────────────────────────────────────────
-// Replace this IP with YOUR computer's local IP address (run `ipconfig` on Windows)
-const BACKEND_IP = "192.168.1.40";
+const BACKEND_IP = "192.168.1.36";
 const WS_URL = `ws://${BACKEND_IP}:8000/ws`;
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -135,6 +134,7 @@ export default function MiniMap() {
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderSpot}
         numColumns={3}
+        columnWrapperStyle={styles.row}
         contentContainerStyle={styles.grid}
       />
     </View>
@@ -215,13 +215,17 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
   },
   spot: {
-    flex: 1,
+    height: 100,
+    width: "30%",
     margin: 6,
-    height: 90,
     borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
   },
+  row: {
+    justifyContent: "flex-start",
+  },
+
   spotFree: {
     backgroundColor: "#2ecc71",
   },

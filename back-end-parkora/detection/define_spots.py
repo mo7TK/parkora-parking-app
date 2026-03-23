@@ -30,8 +30,7 @@ def redraw():
         # Spot number at centroid
         cx = int(sum(p[0] for p in polygon) / len(polygon))
         cy = int(sum(p[1] for p in polygon) / len(polygon))
-        cv2.putText(img, str(idx + 1), (cx - 8, cy + 6),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
+        cv2.putText(img, str(idx + 1), (cx - 8, cy + 6), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
 
     # Draw corners clicked so far for the current spot (in red)
     for pt in current_clicks:

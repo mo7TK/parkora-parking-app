@@ -13,7 +13,7 @@ SEND_EVERY   = 1.0   # seconds between each POST to the backend
 CONFIDENCE   = 0.35  # YOLO confidence threshold (0 to 1)
 
 # ── Performance tuning ───────────────────────────────────────────────────────
-INFER_EVERY  = 3     # run YOLO only on every Nth frame (2–5 is a good range)
+INFER_EVERY  = 5     # run YOLO only on every Nth frame (2–5 is a good range)
 INFER_WIDTH  = 640   # resize frame to this width before inference (None = original)
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -90,8 +90,7 @@ def draw_frame(frame, spots, statuses):
         # Spot number at centroid
         cx = int(spot[:, 0].mean())
         cy = int(spot[:, 1].mean())
-        cv2.putText(frame, str(i + 1), (cx - 8, cy + 6),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
+        cv2.putText(frame, str(i + 1), (cx - 8, cy + 6), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
 
     # Summary bar at top
     free_count     = statuses.count("free")
